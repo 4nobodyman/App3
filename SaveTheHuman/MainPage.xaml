@@ -12,7 +12,7 @@
 
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
-        <x:String x:Key="AppName">Save the Humans</x:String>
+        <x:String x:Key="AppName">Save the Humans!!!</x:String>
         <ControlTemplate x:Key="EnemyTemplate" TargetType="ContentControl">
             <Grid>
                 <Ellipse Fill="Red" Height="100" Stroke="Black" Width="100"/>
