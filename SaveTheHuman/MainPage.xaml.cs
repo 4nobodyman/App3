@@ -165,6 +165,13 @@ namespace SaveTheHuman
             AnimateEnemy(enemy, random.Next((int) playArea.ActualHeight - 100),
                 random.Next((int) playArea.ActualHeight - 100), "(Canvas.Top)");
             playArea.Children.Add(enemy);
+            enemy.PointerEntered += Enemy_PointerEntered;
+        }
+
+        private void Enemy_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (humanCaptured) 
+                EndTheGame();
         }
 
         private void AnimateEnemy(ContentControl enemy, double from, double to, string propertyToAnimate)
@@ -207,12 +214,28 @@ namespace SaveTheHuman
 
         private void playArea_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-
+            if (humanCaptured)
+            {
+                Point pointerPosition = e.GetCurrentPoint(null).Position;
+                Point reletivePosition = grid.TransformToVisual(playArea).TransformPoint(pointerPosition);
+                if ((Math.Abs(reletivePosition.X - Canvas.GetLeft(human)) > human.ActualWidth*3) ||
+                    (Math.Abs(reletivePosition.Y - Canvas.GetTop(human)) > human.ActualHeight*3))
+                {
+                    humanCaptured = false;
+                    human.IsHitTestVisible = true;
+                }
+                else
+                {
+                    Canvas.SetLeft(human, reletivePosition.X - human.ActualWidth / 2);
+                    Canvas.SetTop(human, reletivePosition.Y - human.ActualHeight / 2);
+                }
+            }
         }
 
         private void playArea_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-
+            if (humanCaptured)
+                EndTheGame();
         }
     }
 }
