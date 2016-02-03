@@ -27,7 +27,7 @@ namespace SaveTheHuman
         Random random = new Random();
         DispatcherTimer enemyTimer = new DispatcherTimer();
         DispatcherTimer targetTimer = new DispatcherTimer();
-        bool humanCaptures = false;
+        bool humanCaptured = false;
         
 
         private NavigationHelper navigationHelper;
@@ -78,7 +78,7 @@ namespace SaveTheHuman
             {
                 enemyTimer.Stop();
                 targetTimer.Stop();
-                humanCaptures = false;
+                humanCaptured = false;
                 startButton.Visibility = Visibility.Visible;
                 playArea.Children.Add(gameOverText);
             }
@@ -86,7 +86,7 @@ namespace SaveTheHuman
 
         private void EnemyTimer_Tick(object sender, object e)
         {
-            throw new NotImplementedException();
+            AddEnemy();
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace SaveTheHuman
         private void StartGame()
         {
             human.IsHitTestVisible = true;
-            humanCaptures = false;
+            humanCaptured = false;
             progressBar.Value = 0;
             startButton.Visibility = Visibility.Collapsed;
             playArea.Children.Clear();
@@ -180,6 +180,39 @@ namespace SaveTheHuman
             Storyboard.SetTargetProperty(animation, propertyToAnimate);
             storyboard.Children.Add(animation);
             storyboard.Begin();
+        }
+
+        private void human_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (enemyTimer.IsEnabled)
+            {
+                humanCaptured = true;
+                human.IsHitTestVisible = false;
+            }
+        }
+
+        private void target_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (targetTimer.IsEnabled && humanCaptured)
+            {
+                progressBar.Value = 0;
+                Canvas.SetLeft(target, random.Next(100,(int)playArea.ActualWidth-100));
+                Canvas.SetTop(target, random.Next(100, (int)playArea.ActualHeight-100));
+                Canvas.SetLeft(human, random.Next(100, (int)playArea.ActualWidth-100));
+                Canvas.SetTop(human, random.Next(100, (int)playArea.ActualHeight-100));
+                humanCaptured = false;
+                human.IsHitTestVisible = true;
+            }
+        }
+
+        private void playArea_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+
+        }
+
+        private void playArea_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+
         }
     }
 }
