@@ -25,6 +25,10 @@ namespace SaveTheHuman
     public sealed partial class MainPage : Page
     {
         Random random = new Random();
+        DispatcherTimer enemyTimer = new DispatcherTimer();
+        DispatcherTimer targetTimer = new DispatcherTimer();
+        bool humanCaptures = false;
+        
 
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
@@ -50,9 +54,39 @@ namespace SaveTheHuman
         public MainPage()
         {
             this.InitializeComponent();
+            enemyTimer.Tick += EnemyTimer_Tick;
+            enemyTimer.Interval = TimeSpan.FromSeconds(2);
+
+            targetTimer.Tick += TargetTimer_Tick;
+            targetTimer.Interval = TimeSpan.FromSeconds(.1);
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += navigationHelper_LoadState;
             this.navigationHelper.SaveState += navigationHelper_SaveState;
+        }
+
+        private void TargetTimer_Tick(object sender, object e)
+        {
+            progressBar.Value += 1;
+            if (progressBar.Value >= progressBar.Maximum)
+                EndTheGame();
+
+        }
+
+        private void EndTheGame()
+        {
+            if (!playArea.Children.Contains(gameOverText))
+            {
+                enemyTimer.Stop();
+                targetTimer.Stop();
+                humanCaptures = false;
+                startButton.Visibility = Visibility.Visible;
+                playArea.Children.Add(gameOverText);
+            }
+        }
+
+        private void EnemyTimer_Tick(object sender, object e)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -107,7 +141,20 @@ namespace SaveTheHuman
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
-            AddEnemy();
+            StartGame();
+        }
+
+        private void StartGame()
+        {
+            human.IsHitTestVisible = true;
+            humanCaptures = false;
+            progressBar.Value = 0;
+            startButton.Visibility = Visibility.Collapsed;
+            playArea.Children.Clear();
+            playArea.Children.Add(target);
+            playArea.Children.Add(human);
+            enemyTimer.Start();
+            targetTimer.Start();
         }
 
         private void AddEnemy()
